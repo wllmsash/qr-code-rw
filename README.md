@@ -2,17 +2,22 @@
 
 Read QR codes from and write QR codes to PNG images.
 
-## Requirements
+## Usage
 
-* Python3
-* Pip3
+Build docker image:
 
-## Install
+```sh
+docker build --tag qr-code-rw:latest .
+```
 
-1. ```sh
-   # https://pypi.org/project/pyzbar/
-   sudo apt-get install libzbar0
-   ```
-2. ```sh
-   pip3 install -r requirements.txt
-   ```
+Read QR code:
+
+```sh
+docker run --rm --interactive qr-code-rw:latest read < ./some_image.png
+```
+
+Write QR code:
+
+```sh
+docker run --rm qr-code-rw:latest write "some_data" > ./some_image.png
+```

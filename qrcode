@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+
+from argparse import ArgumentParser
+from io import BytesIO
+from PIL import Image
+from pyzbar.pyzbar import decode
+from qrcode import make
+
+def read():
+  binary_stream = BytesIO(sys.stdin.buffer.read())
+  results = decode(Image.open(binary_stream, mode="r"))
+
+  for i, result in enumerate(results):
+    value = result.data.decode("utf-8")
+    print("[" + str(i) + "]: " + value)
+
+def write(qr_code):
+  img = make(qr_code)
+
+  binary_stream = BytesIO()
+  img.save(binary_stream)
+
+  sys.stdout.buffer.write(binary_stream.getvalue())
+
+parser=ArgumentParser(
+  description="Read & write QR codes.")
+subparsers = parser.add_subparsers(dest="subparser")
+
+read_parser = subparsers.add_parser(
+  "read",
+  help="Read QR code from PNG from stdin.")
+
+write_parser = subparsers.add_parser(
+  "write",
+  help="Encode QR code to PNG to stdout.")
+write_parser.add_argument(
+  "qr_code",
+  metavar="qr_code",
+  type=str,
+  help="QR code to encode.")
+
+args = parser.parse_args()
+
+if args.subparser == "read":
+  read()
+elif args.subparser == "write":
+  write(args.qr_code)
+else:
+  parser.print_help(sys.stderr)
+  exit(1)
